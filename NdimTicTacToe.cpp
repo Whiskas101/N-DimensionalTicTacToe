@@ -25,6 +25,8 @@ struct GameBoard{
     Block **subGameBoard;
 
 
+    void (*GameBoardUpdate)(GameBoard*,int,int,int);
+
     
     
 };
@@ -38,6 +40,7 @@ Block * initBlock(){
     return newBlock;
 }
 
+void GameBoardUpdate(GameBoard * self, int Xpos, int Ypos, int val);
 GameBoard * initGB(int dimension){
 
     //the lowest acceptable dimension is 1 which has 3 blocks
@@ -61,11 +64,12 @@ GameBoard * initGB(int dimension){
         temp[i] = initBlock();
     }
 
-
-
+    newBoard->GameBoardUpdate = GameBoardUpdate;
 
     return newBoard;
 }
+
+
 
 
 void display(GameBoard* board, int dimension){
@@ -77,11 +81,28 @@ void display(GameBoard* board, int dimension){
 
         Block **temp = board->subGameBoard;
 
-        printf("%d", temp[i]->state);
+        printf(" | %d | ", temp[i]->state);
     }
 
 }
 
+//currently implemented with 2 dimensions in mind, will generalise later
+void GameBoardUpdate(GameBoard * self, int Xpos, int Ypos, int val){
+    
+    //accessing the memory block where the numbers are actually stored
+    Block** board = self->subGameBoard;
+    
+    int targetIndex = ((Ypos-1) * 3 + (Xpos-1));
+
+    (board[targetIndex]->state) = 1;
+
+    display(self, self->dimension);
+    
+
+    
+
+
+}
 
 
 
@@ -93,22 +114,44 @@ int main(){
     int dimension;
     cin >> dimension;
 
-    GameBoard * board1 = initGB(dimension);
-
-    display(board1, board1->dimension);
-
-    //ignoring the low dimensions of 0,1,2 for now
-    
-    //for dimension 1, we could have a line of 3 blocks
-    //in dimension 2 we achieve the traditional 3x3 gameboard with 9 blocks
-    //extending this into the 3rd dimension, we would have a cube, 3x3x3,
-    // or we could look at it as, 3 x (2 dimensional tictactoe boards)
-    //for a 4th dimensional board, we would have a hypercube but we could still intepret it as 3x3x3x3
-
-    //in essence, 3^N would be the hyper volume of the hypercube of N dimensions
-    //in this case the volume would be proportional to the amount of memory being allocated.
-
     //Creating the gameboard
+
+    GameBoard * board1 = initGB(dimension);
+    display(board1, board1->dimension); //display only makes sense in upto 2 dimensions (because command line UI)
+
+
+    // ignoring the low dimensions of 0,1,2 for now
+     
+    // for dimension 1, we could have a line of 3 blocks
+    // in dimension 2 we achieve the traditional 3x3 gameboard with 9 blocks
+    // extending this into the 3rd dimension, we would have a cube, 3x3x3,
+    // or we could look at it as, 3 x (2 dimensional tictactoe boards)
+    // for a 4th dimensional board, we would have a hypercube but we could still intepret it as 3x3x3x3
+ 
+    // in essence, 3^N would be the hyper volume of the hypercube of N dimensions
+    // in this case the volume would be proportional to the amount of memory being allocated.
+ 
+    // Getting user input
+
+    int userInput = 0;
+    int Xpos = 0;
+    int Ypos = 0;
+
+    cout << "Enter target X pos";
+    cin >> Xpos;
+
+    cout << endl;
+
+    cout << "Enter Target Y pos";
+    cin >> Ypos;
+    cout << endl;
+
+    cout << "Enter input";
+    cin >> userInput;
+
+    //setting the value of the gameboard
+
+    board1->GameBoardUpdate(board1, Xpos, Ypos, userInput);
 
     
 
